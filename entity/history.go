@@ -6,12 +6,13 @@ import (
 )
 
 type History struct {
-	UserID      uuid.UUID `gorm:"type:uuid;primaryKey" json:"user_id"`
-	ProductID   string    `gorm:"primaryKey" json:"product_id"`
+	ID          uuid.UUID `json:"id" gorm:"type:uuid;primary_key;default:uuid_generate_v4()"`
 	URL         string    `json:"url" gorm:"not null"`
+	ProductID   string    `json:"product_id" gorm:"not null" `
 	ProductName string    `json:"product_name" gorm:"not null"`
 	Content     string    `json:"content" gorm:"not null"`
-	User        User      `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"-"`
+	UserID      uuid.UUID `json:"user_id" gorm:"not null" `
+	User        User      `json:"-" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 
 	Timestamp
 }

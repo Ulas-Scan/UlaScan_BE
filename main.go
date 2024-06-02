@@ -24,14 +24,17 @@ func main() {
 		db *gorm.DB = config.SetupDatabaseConnection()
 
 		// REPOSITORY
-		userRepository repository.UserRepository = repository.NewUserRepository(db)
+		userRepository    repository.UserRepository    = repository.NewUserRepository(db)
+		historyRepository repository.HistoryRepository = repository.NewHistoryRepository(db)
 
 		// SERVICE
-		jwtService  service.JWTService  = service.NewJWTService()
-		userService service.UserService = service.NewUserService(userRepository, jwtService)
+		jwtService     service.JWTService     = service.NewJWTService()
+		userService    service.UserService    = service.NewUserService(userRepository, jwtService)
+		historyService service.HistoryService = service.NewHistoryService(historyRepository)
 
 		// CONTROLLER
-		userController controller.UserController = controller.NewUserController(userService)
+		userController    controller.UserController    = controller.NewUserController(userService)
+		historyController controller.HistoryController = controller.NewHistoryController(historyService)
 	)
 
 	defer config.CloseDatabaseConnection(db)
@@ -57,6 +60,7 @@ func main() {
 
 	// ROUTES
 	routes.User(server, userController, jwtService)
+	routes.History(server, historyController, jwtService)
 
 	// RUNING THE SERVER
 	port := os.Getenv("PORT")
