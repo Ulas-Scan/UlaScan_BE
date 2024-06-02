@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/javakanaya/ulascan-be/service"
-	"github.com/javakanaya/ulascan-be/utils"
+	"ulascan-be/service"
+	"ulascan-be/utils"
 
 	"github.com/gin-gonic/gin"
 )

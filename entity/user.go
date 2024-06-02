@@ -1,7 +1,7 @@
 package entity
 
 import (
-	"github.com/javakanaya/ulascan-be/utils"
+	"ulascan-be/utils"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

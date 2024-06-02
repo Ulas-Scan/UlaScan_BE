@@ -1,10 +1,11 @@
 package routes
 
 import (
+	"ulascan-be/controller"
+	"ulascan-be/middleware"
+	"ulascan-be/service"
+
 	"github.com/gin-gonic/gin"
-	"github.com/javakanaya/ulascan-be/controller"
-	"github.com/javakanaya/ulascan-be/middleware"
-	"github.com/javakanaya/ulascan-be/service"
 )
 
 func User(route *gin.Engine, userController controller.UserController, jwtService service.JWTService) {

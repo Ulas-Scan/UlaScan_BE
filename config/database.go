@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/javakanaya/ulascan-be/constants"
+	"ulascan-be/constants"
+
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

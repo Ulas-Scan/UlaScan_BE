@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/javakanaya/ulascan-be/database/seeds"
+	"ulascan-be/database/seeds"
 
 	"gorm.io/gorm"
 )

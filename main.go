@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"os"
+	"ulascan-be/config"
+	"ulascan-be/controller"
+	"ulascan-be/database"
+	"ulascan-be/middleware"
+	"ulascan-be/repository"
+	"ulascan-be/routes"
+	"ulascan-be/service"
 
 	"github.com/gin-gonic/gin"
-	"github.com/javakanaya/ulascan-be/config"
-	"github.com/javakanaya/ulascan-be/controller"
-	"github.com/javakanaya/ulascan-be/database"
-	"github.com/javakanaya/ulascan-be/middleware"
-	"github.com/javakanaya/ulascan-be/repository"
-	"github.com/javakanaya/ulascan-be/routes"
-	"github.com/javakanaya/ulascan-be/service"
 	"gorm.io/gorm"
 )
 

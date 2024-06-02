@@ -3,11 +3,11 @@ package service
 import (
 	"context"
 
-	"github.com/javakanaya/ulascan-be/constants"
-	"github.com/javakanaya/ulascan-be/dto"
-	"github.com/javakanaya/ulascan-be/entity"
-	"github.com/javakanaya/ulascan-be/repository"
-	"github.com/javakanaya/ulascan-be/utils"
+	"ulascan-be/constants"
+	"ulascan-be/dto"
+	"ulascan-be/entity"
+	"ulascan-be/repository"
+	"ulascan-be/utils"
 )
 
 type (

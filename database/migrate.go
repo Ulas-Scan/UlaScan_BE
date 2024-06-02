@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/javakanaya/ulascan-be/entity"
+	"ulascan-be/entity"
 
 	"gorm.io/gorm"
 )

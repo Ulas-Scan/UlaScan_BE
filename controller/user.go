@@ -3,10 +3,11 @@ package controller
 import (
 	"net/http"
 
+	"ulascan-be/dto"
+	"ulascan-be/service"
+	"ulascan-be/utils"
+
 	"github.com/gin-gonic/gin"
-	"github.com/javakanaya/ulascan-be/dto"
-	"github.com/javakanaya/ulascan-be/service"
-	"github.com/javakanaya/ulascan-be/utils"
 )
 
 type (
