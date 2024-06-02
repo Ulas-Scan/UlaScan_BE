@@ -61,8 +61,9 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no \
             -i ssh_key \
-            techops@$GCE_INSTANCE_IP \
-            "docker pull gcr.io/$GCP_PROJECT_ID/$APP_NAME:latest \
+            ulascan@$GCE_INSTANCE_IP \
+            "gcloud --quiet auth configure-docker $GCP_ZONE-docker.pkg.dev \
+            && docker pull $GCP_ZONE-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
             && docker stop $APP_NAME || true \
             && docker rm --force $APP_NAME || true \
             && docker run -d --name $APP_NAME -p 8080:80 $GCP_ZONE-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
