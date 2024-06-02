@@ -26,11 +26,13 @@ func main() {
 		userRepository repository.UserRepository = repository.NewUserRepository(db)
 
 		// SERVICE
-		jwtService  service.JWTService  = service.NewJWTService()
-		userService service.UserService = service.NewUserService(userRepository, jwtService)
+		jwtService       service.JWTService       = service.NewJWTService()
+		userService      service.UserService      = service.NewUserService(userRepository, jwtService)
+		tokopediaService service.TokopediaService = service.NewTokopediaService()
 
 		// CONTROLLER
-		userController controller.UserController = controller.NewUserController(userService)
+		userController      controller.UserController      = controller.NewUserController(userService)
+		tokopediaController controller.TokopediaController = controller.NewTokopediaController(tokopediaService)
 	)
 
 	defer config.CloseDatabaseConnection(db)
@@ -53,6 +55,7 @@ func main() {
 
 	// ROUTES
 	routes.User(server, userController, jwtService)
+	routes.Tokopedia(server, tokopediaController, jwtService)
 
 	// RUNING THE SERVER
 	port := os.Getenv("PORT")
