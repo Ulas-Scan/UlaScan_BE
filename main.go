@@ -56,6 +56,9 @@ func main() {
 
 	// SERVER
 	server := gin.Default()
+	// Use middleware
+	server.Use(middleware.Logger())
+	server.Use(middleware.Recovery())
 	server.Use(middleware.CORSMiddleware())
 
 	// ROUTES
