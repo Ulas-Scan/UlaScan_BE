@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"ulascan-be/config"
+	"ulascan-be/constants"
 	"ulascan-be/controller"
 	"ulascan-be/database"
 	"ulascan-be/middleware"
@@ -41,11 +42,14 @@ func main() {
 	}
 	fmt.Println("> Database Migrated")
 
-	fmt.Println("SEEDING DATABASE...")
-	if err := database.Seeder(db); err != nil {
-		panic(err)
+	if os.Getenv("APP_ENV") == constants.ENUM_RUN_DEV {
+		fmt.Println("RUNNING ON DEV ENV")
+		fmt.Println("SEEDING DATABASE...")
+		if err := database.Seeder(db); err != nil {
+			panic(err)
+		}
+		fmt.Println("> Database Seeded")
 	}
-	fmt.Println("> Database Seeded")
 
 	// SERVER
 	server := gin.Default()
