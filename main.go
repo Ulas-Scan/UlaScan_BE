@@ -71,7 +71,7 @@ func main() {
 		port = "8080"
 	}
 
-	if err := server.Run(":" + port); err != nil {
+	if err := server.Run("0.0.0.0:" + port); err != nil {
 		fmt.Println("Server failed to start: ", err)
 		return
 	}
