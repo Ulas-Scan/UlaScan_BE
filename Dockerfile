@@ -6,7 +6,7 @@ COPY . .
 
 RUN go mod download && go mod verify
 
-RUN go build -v -o main .
+RUN go build -o main .
 
 EXPOSE 8080
 
