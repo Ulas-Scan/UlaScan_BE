@@ -38,12 +38,12 @@ jobs:
 
       - name: Configure docker for Artifact Registry
         run: |
-          gcloud --quiet auth configure-docker $GCP_REGION:-docker.pkg.dev
+          gcloud --quiet auth configure-docker $GCP_REGION-docker.pkg.dev
 
       - name: Build and push Docker image
         run: |
-          docker build -t $GCP_REGION:-docker.pkg.dev/$GCP_PROJECT_ID/ulascan/$APP_NAME:latest .
-          docker push $GCP_REGION:-docker.pkg.dev/$GCP_PROJECT_ID/ulascan/$APP_NAME:latest
+          docker build -t $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/ulascan/$APP_NAME:latest .
+          docker push $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/ulascan/$APP_NAME:latest
 
   deploy:
     needs: build
@@ -63,11 +63,11 @@ jobs:
           ssh -o StrictHostKeyChecking=no \
             -i ssh_key \
             ulascan@$GCE_INSTANCE_IP \
-            "gcloud --quiet auth configure-docker $GCP_REGION:-docker.pkg.dev \
-            && docker pull $GCP_REGION:-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
+            "gcloud --quiet auth configure-docker $GCP_REGION-docker.pkg.dev \
+            && docker pull $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
             && docker stop $APP_NAME || true \
             && docker rm --force $APP_NAME || true \
-            && docker run -d --name $APP_NAME -p 8080:80 $GCP_REGION:-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
+            && docker run -d --name $APP_NAME -p 8080:80 $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
             && docker image prune -f"
 
       - name: Cleanup SSH key
