@@ -67,7 +67,16 @@ jobs:
             && docker pull $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
             && docker stop $APP_NAME || true \
             && docker rm --force $APP_NAME || true \
-            && docker run -d --name $APP_NAME -p 8080:80 $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$APP_NAME:latest \
+            && docker run -d \
+                --name $APP_NAME \
+                -p 8080:80 \
+                -e DB_HOST=${{ secrets.DB_HOST }} \
+                -e DB_USER=${{ secrets.DB_USER }} \
+                -e DB_PASS=${{ secrets.DB_PASS }} \
+                -e DB_NAME=${{ secrets.DB_NAME }} \
+                -e DB_PORT=${{ secrets.DB_PORT }} \
+                -e APP_ENV=${{ secrets.APP_ENV }} \
+                $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/ulascan/$APP_NAME:latest \
             && docker image prune -f"
 
       - name: Cleanup SSH key
