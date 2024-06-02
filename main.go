@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"ulascan-be/config"
+	"ulascan-be/constants"
 	"ulascan-be/controller"
 	"ulascan-be/database"
 	"ulascan-be/middleware"
@@ -23,15 +24,18 @@ func main() {
 		db *gorm.DB = config.SetupDatabaseConnection()
 
 		// REPOSITORY
-		userRepository repository.UserRepository = repository.NewUserRepository(db)
+		userRepository    repository.UserRepository    = repository.NewUserRepository(db)
+		historyRepository repository.HistoryRepository = repository.NewHistoryRepository(db)
 
 		// SERVICE
 		jwtService       service.JWTService       = service.NewJWTService()
 		userService      service.UserService      = service.NewUserService(userRepository, jwtService)
+    historyService   service.HistoryService   = service.NewHistoryService(historyRepository)
 		tokopediaService service.TokopediaService = service.NewTokopediaService()
 
 		// CONTROLLER
 		userController      controller.UserController      = controller.NewUserController(userService)
+    historyController controller.HistoryController     = controller.NewHistoryController(historyService)
 		tokopediaController controller.TokopediaController = controller.NewTokopediaController(tokopediaService)
 	)
 
@@ -43,19 +47,26 @@ func main() {
 	}
 	fmt.Println("> Database Migrated")
 
-	fmt.Println("SEEDING DATABASE...")
-	if err := database.Seeder(db); err != nil {
-		panic(err)
+	if os.Getenv("APP_ENV") == constants.ENUM_RUN_DEV {
+		fmt.Println("RUNNING ON DEV ENV")
+		fmt.Println("SEEDING DATABASE...")
+		if err := database.Seeder(db); err != nil {
+			panic(err)
+		}
+		fmt.Println("> Database Seeded")
 	}
-	fmt.Println("> Database Seeded")
 
 	// SERVER
 	server := gin.Default()
+	// Use middleware
+	server.Use(middleware.Logger())
+	server.Use(middleware.Recovery())
 	server.Use(middleware.CORSMiddleware())
 
 	// ROUTES
 	routes.User(server, userController, jwtService)
 	routes.Tokopedia(server, tokopediaController, jwtService)
+	routes.History(server, historyController, jwtService)
 
 	// RUNING THE SERVER
 	port := os.Getenv("PORT")

@@ -14,6 +14,8 @@ type User struct {
 	Password string    `json:"password" gorm:"not null"`
 	Role     string    `json:"role" gorm:"not null"`
 
+	Histories []History `gorm:"foreignKey:UserID" json:"histories,omitempty"`
+
 	Timestamp
 }
 
