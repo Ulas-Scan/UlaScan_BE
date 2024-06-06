@@ -28,13 +28,15 @@ func main() {
 		historyRepository repository.HistoryRepository = repository.NewHistoryRepository(db)
 
 		// SERVICE
-		jwtService     service.JWTService     = service.NewJWTService()
-		userService    service.UserService    = service.NewUserService(userRepository, jwtService)
-		historyService service.HistoryService = service.NewHistoryService(historyRepository)
+		jwtService       service.JWTService       = service.NewJWTService()
+		userService      service.UserService      = service.NewUserService(userRepository, jwtService)
+    historyService   service.HistoryService   = service.NewHistoryService(historyRepository)
+		tokopediaService service.TokopediaService = service.NewTokopediaService()
 
 		// CONTROLLER
-		userController    controller.UserController    = controller.NewUserController(userService)
-		historyController controller.HistoryController = controller.NewHistoryController(historyService)
+		userController      controller.UserController      = controller.NewUserController(userService)
+    historyController controller.HistoryController     = controller.NewHistoryController(historyService)
+		tokopediaController controller.TokopediaController = controller.NewTokopediaController(tokopediaService)
 	)
 
 	defer config.CloseDatabaseConnection(db)
@@ -63,6 +65,7 @@ func main() {
 
 	// ROUTES
 	routes.User(server, userController, jwtService)
+	routes.Tokopedia(server, tokopediaController, jwtService)
 	routes.History(server, historyController, jwtService)
 
 	// RUNING THE SERVER
