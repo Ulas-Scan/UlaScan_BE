@@ -14,13 +14,9 @@ const (
 )
 
 var (
-	ErrProductUrlMissing         = errors.New("product url is required")
-	ErrProductUrlWrongFormat     = errors.New("invalid product url format")
-	ErrCreateTokopediaRequest    = errors.New("failed to create http request")
-	ErrSendsTokopediaRequest     = errors.New("failed to sends http request")
-	ErrReadTokopediaResponseBody = errors.New("failed to read http response body")
-	ErrParseJson                 = errors.New("failed to parse response json")
-	ErrProductId                 = errors.New("failed to extract product id")
+	ErrProductUrlMissing     = errors.New("product url is required")
+	ErrProductUrlWrongFormat = errors.New("invalid product url format")
+	ErrProductId             = errors.New("failed to extract product id")
 )
 
 type ProductReviewResponseTokopedia struct {

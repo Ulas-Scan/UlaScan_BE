@@ -43,7 +43,7 @@ func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductI
 	tokopediaReq, err := http.NewRequest(method, url, payload)
 	if err != nil {
 		fmt.Println(err)
-		return "", dto.ErrCreateTokopediaRequest
+		return "", dto.ErrCreateHttpRequest
 	}
 
 	tokopediaReq.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
@@ -55,13 +55,13 @@ func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductI
 
 	res, err := client.Do(tokopediaReq)
 	if err != nil {
-		return "", dto.ErrSendsTokopediaRequest
+		return "", dto.ErrSendsHttpRequest
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", dto.ErrReadTokopediaResponseBody
+		return "", dto.ErrReadHttpResponseBody
 	}
 
 	var response map[string]interface{}
@@ -101,7 +101,7 @@ func (s *tokopediaService) GetReviews(ctx context.Context, req dto.GetReviewsReq
 
 		tokopediaReq, err := http.NewRequest(method, url, strings.NewReader(payload))
 		if err != nil {
-			return nil, dto.ErrCreateTokopediaRequest
+			return nil, dto.ErrCreateHttpRequest
 		}
 
 		tokopediaReq.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
@@ -112,13 +112,13 @@ func (s *tokopediaService) GetReviews(ctx context.Context, req dto.GetReviewsReq
 
 		res, err := client.Do(tokopediaReq)
 		if err != nil {
-			return nil, dto.ErrSendsTokopediaRequest
+			return nil, dto.ErrSendsHttpRequest
 		}
 		defer res.Body.Close()
 
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
-			return nil, dto.ErrReadTokopediaResponseBody
+			return nil, dto.ErrReadHttpResponseBody
 		}
 
 		var response dto.ProductReviewResponseTokopedia
