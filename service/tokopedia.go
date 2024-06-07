@@ -18,17 +18,17 @@ type (
 	}
 
 	tokopediaService struct {
+		url string
 	}
 )
 
 func NewTokopediaService() TokopediaService {
-	return &tokopediaService{}
+	return &tokopediaService{
+		url: "https://gql.tokopedia.com/graphql/",
+	}
 }
 
 func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductIdRequest) (string, error) {
-	url := "https://gql.tokopedia.com/graphql/"
-	method := "POST"
-
 	payload := strings.NewReader(fmt.Sprintf(`{
 		"operationName": "PDPGetLayoutQuery",
 		"variables": {
@@ -40,7 +40,7 @@ func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductI
 	}`, req.ShopDomain, req.ProductKey))
 
 	client := &http.Client{}
-	tokopediaReq, err := http.NewRequest(method, url, payload)
+	tokopediaReq, err := http.NewRequest("POST", s.url, payload)
 	if err != nil {
 		fmt.Println(err)
 		return "", dto.ErrCreateHttpRequest
@@ -79,9 +79,6 @@ func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductI
 }
 
 func (s *tokopediaService) GetReviews(ctx context.Context, req dto.GetReviewsRequest) ([]dto.ReviewResponse, error) {
-	url := "https://gql.tokopedia.com/graphql/"
-	method := "POST"
-
 	var allReviews []dto.ReviewResponse
 
 	for page := 1; page <= 2; page++ {
@@ -99,7 +96,7 @@ func (s *tokopediaService) GetReviews(ctx context.Context, req dto.GetReviewsReq
 
 		client := &http.Client{}
 
-		tokopediaReq, err := http.NewRequest(method, url, strings.NewReader(payload))
+		tokopediaReq, err := http.NewRequest("POST", s.url, strings.NewReader(payload))
 		if err != nil {
 			return nil, dto.ErrCreateHttpRequest
 		}
