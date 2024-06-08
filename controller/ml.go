@@ -10,6 +10,7 @@ import (
 	"ulascan-be/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type (
@@ -21,6 +22,7 @@ type (
 		tokopediaService service.TokopediaService
 		modelService     service.ModelService
 		geminiService    service.GeminiService
+		historyService   service.HistoryService
 	}
 )
 
@@ -28,11 +30,13 @@ func NewMLController(
 	ts service.TokopediaService,
 	ms service.ModelService,
 	gs service.GeminiService,
+	hs service.HistoryService,
 ) MLController {
 	return &mlController{
 		tokopediaService: ts,
 		modelService:     ms,
 		geminiService:    gs,
+		historyService:   hs,
 	}
 }
 
@@ -127,6 +131,43 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
+	}
+
+	userID, exists := ctx.Get("user_id")
+	if exists {
+		userIDStr, ok := userID.(string)
+		if !ok {
+			res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_CREATE_HISTORY, "Invalid user ID type", nil)
+			ctx.JSON(http.StatusInternalServerError, res)
+			return
+		}
+
+		userUUID, err := uuid.Parse(userIDStr)
+		if err != nil {
+			res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_CREATE_HISTORY, "Invalid user ID format", nil)
+			ctx.JSON(http.StatusInternalServerError, res)
+			return
+		}
+
+		history := dto.HistoryCreateRequest{
+			UserID:           userUUID,
+			ProductID:        product.ProductId,
+			URL:              productReq.ProductUrl,
+			ProductName:      product.ProductName,
+			PositiveCount:    predictResult.CountPositive,
+			NegativeCount:    predictResult.CountNegative,
+			Packaging:        analyzeResult.Packaging,
+			Delivery:         analyzeResult.Delivery,
+			AdminResponse:    analyzeResult.AdminResponse,
+			ProductCondition: analyzeResult.ProductCondition,
+			Content:          summarizeResult,
+		}
+		_, err = c.historyService.CreateHistory(ctx, history)
+		if err != nil {
+			res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_CREATE_HISTORY, err.Error(), nil)
+			ctx.JSON(http.StatusInternalServerError, res)
+			return
+		}
 	}
 
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, dto.MLResult{

@@ -38,7 +38,7 @@ func main() {
 		// CONTROLLER
 		userController    controller.UserController    = controller.NewUserController(userService)
 		historyController controller.HistoryController = controller.NewHistoryController(historyService)
-		mlController      controller.MLController      = controller.NewMLController(tokopediaService, modelService, geminiService)
+		mlController      controller.MLController      = controller.NewMLController(tokopediaService, modelService, geminiService, historyService)
 	)
 
 	defer config.CloseDatabaseConnection(db)
