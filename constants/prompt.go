@@ -18,10 +18,10 @@ jumlah = (komentar positif / (komentar positif + komentar negatif)) * 100
 jumlah dalam format float atau bilangan desimal.
 Output JSON dengan format sebagai berikut:
 {
-	"packaging": jumlah,
-	"delivery": jumlah,
-	"admin_response": jumlah,
-	"product_condition": jumlah
+	"packaging": float(jumlah),
+	"delivery": float(jumlah),
+	"admin_response": float(jumlah),
+	"product_condition": float(jumlah)
 }
 `
 )
