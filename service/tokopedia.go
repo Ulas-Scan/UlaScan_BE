@@ -90,9 +90,11 @@ func (s *tokopediaService) GetProduct(ctx context.Context, req dto.GetProductReq
 
 	// Extracting images
 	productMedia := response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["components"].([]interface{})[1].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["media"].([]interface{})
-	imageUrls := make([]string, len(productMedia))
-	for i, media := range productMedia {
-		imageUrls[i] = media.(map[string]interface{})["urlOriginal"].(string)
+	var imageUrls []string
+	for _, media := range productMedia {
+		if media.(map[string]interface{})["type"].(string) == "image" {
+			imageUrls = append(imageUrls, media.(map[string]interface{})["urlOriginal"].(string))
+		}
 	}
 
 	productResponse := dto.GetProductResponse{
