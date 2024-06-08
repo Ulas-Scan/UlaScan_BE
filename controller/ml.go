@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -59,25 +58,25 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		return
 	}
 
-	productReq := dto.GetProductIdRequest{
+	productReq := dto.GetProductRequest{
 		ShopDomain: pathParts[1],
 		ProductKey: pathParts[2],
 		ProductUrl: "https://www.tokopedia.com/" + pathParts[1] + "/" + pathParts[2],
 	}
 
-	productId, err := c.tokopediaService.GetProductId(ctx, productReq)
+	product, err := c.tokopediaService.GetProduct(ctx, productReq)
 	if err != nil {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_PRODUCT_ID, err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	fmt.Println("=== PRODUCT ID ===")
-	fmt.Println(productId)
+	// fmt.Println("=== PRODUCT ID ===")
+	// fmt.Println(product)
 
 	reviewsReq := dto.GetReviewsRequest{
 		ProductUrl: productReq.ProductUrl,
-		ProductId:  productId,
+		ProductId:  product.ProductId,
 	}
 
 	reviews, err := c.tokopediaService.GetReviews(ctx, reviewsReq)
@@ -87,8 +86,8 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("=== REVIEWS ===")
-	fmt.Println(reviews)
+	// fmt.Println("=== REVIEWS ===")
+	// fmt.Println(reviews)
 
 	statements := make([]string, len(reviews))
 	for i, review := range reviews {
@@ -99,8 +98,8 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		Statements: statements,
 	}
 
-	fmt.Println("=== PREDICT REQ ===")
-	fmt.Println(predictReq)
+	// fmt.Println("=== PREDICT REQ ===")
+	// fmt.Println(predictReq)
 
 	predictResult, err := c.modelService.Predict(ctx, predictReq)
 	if err != nil {
@@ -130,19 +129,18 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		return
 	}
 
-	fmt.Println("=== RESULT ===")
-	fmt.Println(predictResult)
-	fmt.Println(analyzeResult)
-	fmt.Println(summarizeResult)
-
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, dto.MLResult{
-		CountNegative:    predictResult.CountNegative,
-		CountPositive:    predictResult.CountPositive,
-		Packaging:        analyzeResult.Packaging,
-		Delivery:         analyzeResult.Delivery,
-		AdminResponse:    analyzeResult.AdminResponse,
-		ProductCondition: analyzeResult.ProductCondition,
-		Summary:          summarizeResult,
+		ProductName:        product.ProductName,
+		ProductDescription: product.ProductDescription,
+		ImageUrls:          product.ImageUrls,
+		ShopName:           product.ShopName,
+		CountNegative:      predictResult.CountNegative,
+		CountPositive:      predictResult.CountPositive,
+		Packaging:          analyzeResult.Packaging,
+		Delivery:           analyzeResult.Delivery,
+		AdminResponse:      analyzeResult.AdminResponse,
+		ProductCondition:   analyzeResult.ProductCondition,
+		Summary:            summarizeResult,
 	})
 	ctx.JSON(http.StatusOK, res)
 }

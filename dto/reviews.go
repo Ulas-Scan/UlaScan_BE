@@ -30,10 +30,18 @@ type ProductReviewResponseTokopedia struct {
 	} `json:"data"`
 }
 
-type GetProductIdRequest struct {
+type GetProductRequest struct {
 	ProductUrl string
 	ProductKey string
 	ShopDomain string
+}
+
+type GetProductResponse struct {
+	ProductName        string
+	ProductDescription string
+	ShopName           string
+	ProductId          string
+	ImageUrls          []string
 }
 
 type GetReviewsRequest struct {

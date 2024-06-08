@@ -13,7 +13,7 @@ import (
 
 type (
 	TokopediaService interface {
-		GetProductId(ctx context.Context, req dto.GetProductIdRequest) (string, error)
+		GetProduct(ctx context.Context, req dto.GetProductRequest) (dto.GetProductResponse, error)
 		GetReviews(ctx context.Context, req dto.GetReviewsRequest) ([]dto.ReviewResponse, error)
 	}
 
@@ -28,7 +28,7 @@ func NewTokopediaService() TokopediaService {
 	}
 }
 
-func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductIdRequest) (string, error) {
+func (s *tokopediaService) GetProduct(ctx context.Context, req dto.GetProductRequest) (dto.GetProductResponse, error) {
 	payload := strings.NewReader(fmt.Sprintf(`{
 		"operationName": "PDPGetLayoutQuery",
 		"variables": {
@@ -36,14 +36,14 @@ func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductI
 			"productKey": "%s",
 			"apiVersion": 1
 		},
-		"query": "query PDPGetLayoutQuery($shopDomain: String, $productKey: String, $apiVersion: Float) {\n  pdpGetLayout(shopDomain: $shopDomain, productKey: $productKey, apiVersion: $apiVersion) {\n    basicInfo {\n      id: productID\n    }\n  }\n}\n"
+		"query": "fragment ProductVariant on pdpDataProductVariant {\n  errorCode\n  parentID\n  defaultChild\n  sizeChart\n  totalStockFmt\n  variants {\n    productVariantID\n    variantID\n    name\n    identifier\n    option {\n      picture {\n        urlOriginal: url\n        urlThumbnail: url100\n        __typename\n      }\n      productVariantOptionID\n      variantUnitValueID\n      value\n      hex\n      stock\n      __typename\n    }\n    __typename\n  }\n  children {\n    productID\n    price\n    priceFmt\n    slashPriceFmt\n    discPercentage\n    optionID\n    optionName\n    productName\n    productURL\n    picture {\n      urlOriginal: url\n      urlThumbnail: url100\n      __typename\n    }\n    stock {\n      stock\n      isBuyable\n      stockWordingHTML\n      minimumOrder\n      maximumOrder\n      __typename\n    }\n    isCOD\n    isWishlist\n    campaignInfo {\n      campaignID\n      campaignType\n      campaignTypeName\n      campaignIdentifier\n      background\n      discountPercentage\n      originalPrice\n      discountPrice\n      stock\n      stockSoldPercentage\n      startDate\n      endDate\n      endDateUnix\n         isAppsOnly\n      isActive\n      hideGimmick\n      isCheckImei\n      minOrder\n      __typename\n    }\n    thematicCampaign {\n      additionalInfo\n      background\n      campaignName\n       __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment ProductMedia on pdpDataProductMedia {\n  media {\n    type\n    urlOriginal: URLOriginal\n    urlThumbnail: URLThumbnail\n    urlMaxRes: URLMaxRes\n    videoUrl: videoURLAndroid\n    prefix\n    suffix\n    description\n    variantOptionID\n    __typename\n  }\n  videos {\n    source\n    url\n    __typename\n  }\n  __typename\n}\n\nfragment ProductCategoryCarousel on pdpDataCategoryCarousel {\n  linkText\n  titleCarousel\n   list {\n    categoryID\n     title\n        __typename\n  }\n  __typename\n}\n\nfragment ProductHighlight on pdpDataProductContent {\n  name\n }\n\nfragment ProductCustomInfo on pdpDataCustomInfo {\n  title\n   separator\n  description\n  __typename\n}\n\nfragment ProductInfo on pdpDataProductInfo {\n  row\n  content {\n    title\n    subtitle\n      __typename\n  }\n  __typename\n}\n\nfragment ProductDetail on pdpDataProductDetail {\n  content {\n    title\n    subtitle\n  }\n  __typename\n}\n\nfragment ProductDataInfo on pdpDataInfo {\n  title\n   __typename\n}\n\nfragment ProductSocial on pdpDataSocialProof {\n  row\n  content {\n    title\n    subtitle\n     type\n    rating\n    __typename\n  }\n  __typename\n}\n\nfragment ProductDetailMediaComponent on pdpDataProductDetailMediaComponent {\n  title\n  description\n  contentMedia {\n    url\n    ratio\n    type\n    __typename\n  }\n  show\n  ctaText\n  __typename\n}\n\nquery PDPGetLayoutQuery($shopDomain: String, $productKey: String, $layoutID: String, $apiVersion: Float, $userLocation: pdpUserLocation, $extParam: String, $tokonow: pdpTokoNow, $deviceID: String) {\n  pdpGetLayout(shopDomain: $shopDomain, productKey: $productKey, layoutID: $layoutID, apiVersion: $apiVersion, userLocation: $userLocation, extParam: $extParam, tokonow: $tokonow, deviceID: $deviceID) {\n           basicInfo {\n          id: productID\n        shopName\n    }\n    components {\n      name\n      data {\n        ...ProductMedia        ...ProductHighlight\n        ...ProductInfo\n        ...ProductDetail\n        ...ProductSocial\n        ...ProductDataInfo\n        ...ProductCustomInfo\n        ...ProductVariant\n        ...ProductCategoryCarousel\n        ...ProductDetailMediaComponent\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n"
 	}`, req.ShopDomain, req.ProductKey))
 
 	client := &http.Client{}
 	tokopediaReq, err := http.NewRequest("POST", s.url, payload)
 	if err != nil {
 		fmt.Println(err)
-		return "", dto.ErrCreateHttpRequest
+		return dto.GetProductResponse{}, dto.ErrCreateHttpRequest
 	}
 
 	tokopediaReq.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
@@ -55,27 +55,56 @@ func (s *tokopediaService) GetProductId(ctx context.Context, req dto.GetProductI
 
 	res, err := client.Do(tokopediaReq)
 	if err != nil {
-		return "", dto.ErrSendsHttpRequest
+		return dto.GetProductResponse{}, dto.ErrSendsHttpRequest
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", dto.ErrReadHttpResponseBody
+		return dto.GetProductResponse{}, dto.ErrReadHttpResponseBody
 	}
 
 	var response map[string]interface{}
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return "", dto.ErrParseJson
+		return dto.GetProductResponse{}, dto.ErrParseJson
 	}
 
-	id, ok := response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["basicInfo"].(map[string]interface{})["id"].(string)
-	if !ok {
-		return "", dto.ErrProductId
+	// Extracting necessary data
+	productData := response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["components"].([]interface{})
+	var productName string
+	var description string
+	for _, component := range productData {
+		if component.(map[string]interface{})["name"].(string) == "product_detail" {
+			content := component.(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["content"].([]interface{})
+			for _, c := range content {
+				if c.(map[string]interface{})["title"].(string) == "Deskripsi" {
+					description = c.(map[string]interface{})["subtitle"].(string)
+					break
+				}
+			}
+		} else if component.(map[string]interface{})["name"].(string) == "product_content" {
+			productName = component.(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["name"].(string)
+		}
 	}
 
-	return id, nil
+	// Extracting images
+	productMedia := response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["components"].([]interface{})[1].(map[string]interface{})["data"].([]interface{})[0].(map[string]interface{})["media"].([]interface{})
+	imageUrls := make([]string, len(productMedia))
+	for i, media := range productMedia {
+		imageUrls[i] = media.(map[string]interface{})["urlOriginal"].(string)
+	}
+
+	productResponse := dto.GetProductResponse{
+		ProductName:        productName,
+		ProductDescription: description,
+		ShopName:           response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["basicInfo"].(map[string]interface{})["shopName"].(string),
+		ProductId:          response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["basicInfo"].(map[string]interface{})["id"].(string),
+		ImageUrls:          imageUrls,
+	}
+
+	return productResponse, nil
+
 }
 
 func (s *tokopediaService) GetReviews(ctx context.Context, req dto.GetReviewsRequest) ([]dto.ReviewResponse, error) {

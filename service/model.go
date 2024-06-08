@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -34,8 +33,8 @@ func (s *modelService) Predict(ctx context.Context, req dto.PredictRequest) (dto
 		return dto.PredictResponse{}, dto.ErrMarshallJson
 	}
 
-	fmt.Println("=========== JSON ================")
-	fmt.Println(string(jsonData))
+	// fmt.Println("=========== JSON ================")
+	// fmt.Println(string(jsonData))
 
 	// Create the HTTP request
 	client := &http.Client{}
