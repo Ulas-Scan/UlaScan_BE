@@ -21,16 +21,19 @@ type (
 	mlController struct {
 		tokopediaService service.TokopediaService
 		modelService     service.ModelService
+		geminiService    service.GeminiService
 	}
 )
 
 func NewMLController(
 	ts service.TokopediaService,
 	ms service.ModelService,
+	gs service.GeminiService,
 ) MLController {
 	return &mlController{
 		tokopediaService: ts,
 		modelService:     ms,
+		geminiService:    gs,
 	}
 }
 
@@ -99,16 +102,39 @@ func (c *mlController) GetSentimentAnalysis(ctx *gin.Context) {
 	fmt.Println("=== PREDICT REQ ===")
 	fmt.Println(predictReq)
 
-	result, err := c.modelService.Predict(ctx, predictReq)
+	predictResult, err := c.modelService.Predict(ctx, predictReq)
 	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, err.Error(), nil)
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_PREDICT, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	var builder strings.Builder
+	for _, review := range reviews {
+		builder.WriteString(review.Message)
+		builder.WriteString("\n")
+	}
+	concatenatedMessage := builder.String()
+
+	analyzeResult, err := c.geminiService.Analyze(ctx, concatenatedMessage)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	summarizeResult, err := c.geminiService.Summarize(ctx, concatenatedMessage)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
 	fmt.Println("=== RESULT ===")
-	fmt.Println(result)
+	fmt.Println(predictResult)
+	fmt.Println(analyzeResult)
+	fmt.Println(summarizeResult)
 
-	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, result)
+	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, summarizeResult)
 	ctx.JSON(http.StatusOK, res)
 }

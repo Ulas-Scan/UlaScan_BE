@@ -33,11 +33,12 @@ func main() {
 		historyService   service.HistoryService   = service.NewHistoryService(historyRepository)
 		tokopediaService service.TokopediaService = service.NewTokopediaService()
 		modelService     service.ModelService     = service.NewModelService()
+		geminiService    service.GeminiService    = service.NewGeminiService()
 
 		// CONTROLLER
 		userController    controller.UserController    = controller.NewUserController(userService)
 		historyController controller.HistoryController = controller.NewHistoryController(historyService)
-		mlController      controller.MLController      = controller.NewMLController(tokopediaService, modelService)
+		mlController      controller.MLController      = controller.NewMLController(tokopediaService, modelService, geminiService)
 	)
 
 	defer config.CloseDatabaseConnection(db)
