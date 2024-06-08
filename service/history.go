@@ -28,6 +28,14 @@ func NewHistoryService(historyRepo repository.HistoryRepository) HistoryService 
 }
 
 func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreateRequest) (dto.HistoryResponse, error) {
+	isExist := s.historyRepo.CheckByProductId(ctx, nil, req.ProductID, req.UserID.String())
+	if isExist {
+		err := s.historyRepo.DeleteByProductId(ctx, nil, req.ProductID, req.UserID.String())
+		if err != nil {
+			return dto.HistoryResponse{}, dto.ErrDeleteHistory
+		}
+	}
+
 	history := entity.History{
 		URL:              req.URL,
 		ProductID:        req.ProductID,

@@ -21,6 +21,7 @@ const (
 
 var (
 	ErrCreateHistory = errors.New("failed to create history")
+	ErrDeleteHistory = errors.New("failed to delete history")
 	ErrGetHistories  = errors.New("failed to get histories")
 	ErrGetHistory    = errors.New("failed to get history")
 )
