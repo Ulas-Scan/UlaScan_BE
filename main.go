@@ -42,6 +42,7 @@ func main() {
 	)
 
 	defer config.CloseDatabaseConnection(db)
+	defer geminiService.CloseClient()
 
 	fmt.Println("MIGRATING DATABASE...")
 	if err := database.MigrateFresh(db); err != nil {

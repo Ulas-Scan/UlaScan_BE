@@ -15,7 +15,7 @@ import (
 
 type (
 	MLController interface {
-		GetSentimentAnalysis(ctx *gin.Context)
+		GetSentimentAnalysisAndSummarization(ctx *gin.Context)
 	}
 
 	mlController struct {
@@ -37,7 +37,7 @@ func NewMLController(
 	}
 }
 
-func (c *mlController) GetSentimentAnalysis(ctx *gin.Context) {
+func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 	productUrl := ctx.Query("product_url")
 	if productUrl == "" {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, dto.ErrProductUrlMissing.Error(), nil)
@@ -135,6 +135,14 @@ func (c *mlController) GetSentimentAnalysis(ctx *gin.Context) {
 	fmt.Println(analyzeResult)
 	fmt.Println(summarizeResult)
 
-	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, summarizeResult)
+	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, dto.MLResult{
+		CountNegative:    predictResult.CountNegative,
+		CountPositive:    predictResult.CountPositive,
+		Packaging:        analyzeResult.Packaging,
+		Delivery:         analyzeResult.Delivery,
+		AdminResponse:    analyzeResult.AdminResponse,
+		ProductCondition: analyzeResult.ProductCondition,
+		Summary:          summarizeResult,
+	})
 	ctx.JSON(http.StatusOK, res)
 }
