@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -23,7 +24,7 @@ type (
 
 func NewModelService() ModelService {
 	return &modelService{
-		predictEndpoint: "http://" + os.Getenv("ML_HOST") + "/predict",
+		predictEndpoint: os.Getenv("ML_URL"),
 	}
 }
 
@@ -38,11 +39,12 @@ func (s *modelService) Predict(ctx context.Context, req dto.PredictRequest) (dto
 
 	// Create the HTTP request
 	client := &http.Client{}
-	httpReq, err := http.NewRequestWithContext(ctx, "GET", s.predictEndpoint, bytes.NewBuffer(jsonData))
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", s.predictEndpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return dto.PredictResponse{}, dto.ErrCreateHttpRequest
 	}
 	httpReq.Header.Add("Content-Type", "application/json")
+	httpReq.Header.Add("api-key", os.Getenv("ML_API_KEY"))
 
 	// Perform the HTTP request
 	res, err := client.Do(httpReq)
@@ -57,9 +59,10 @@ func (s *modelService) Predict(ctx context.Context, req dto.PredictRequest) (dto
 		return dto.PredictResponse{}, dto.ErrReadHttpResponseBody
 	}
 
-	// Check if the HTTP status code is 200 OK
-	if res.StatusCode != http.StatusOK {
-		return dto.PredictResponse{}, dto.ErrNotOk
+	fmt.Print(res)
+	// Check if the HTTP status code is 500
+	if res.StatusCode == http.StatusInternalServerError {
+		return dto.PredictResponse{}, dto.ErrModelInternalServerError
 	}
 
 	// Parse the response JSON into the response DTO

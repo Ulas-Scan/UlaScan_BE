@@ -11,7 +11,8 @@ const (
 )
 
 var (
-	ErrMarshallJson = errors.New("failed to marshall request body json")
+	ErrMarshallJson             = errors.New("failed to marshall request body json")
+	ErrModelInternalServerError = errors.New("internal server error from ml erver")
 )
 
 type PredictRequest struct {
