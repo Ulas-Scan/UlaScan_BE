@@ -76,6 +76,9 @@ jobs:
                 -e DB_NAME=${{ secrets.DB_NAME }} \
                 -e DB_PORT=${{ secrets.DB_PORT }} \
                 -e APP_ENV=${{ secrets.APP_ENV }} \
+                -e ML_URL=${{ secrets.ML_URL }} \
+                -e ML_API_KEY=${{ secrets.ML_API_KEY }} \
+                -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \
                 $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/ulascan/$APP_NAME:latest \
             && docker image prune -f"
 
