@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"io"
 	"net/http"
 	"strings"
@@ -15,6 +16,7 @@ type (
 	TokopediaService interface {
 		GetProduct(ctx context.Context, req dto.GetProductRequest) (dto.GetProductResponse, error)
 		GetReviews(ctx context.Context, req dto.GetReviewsRequest) ([]dto.ReviewResponse, error)
+		GetShopAvatar(ctx context.Context, shopDomain string) (string, error)
 	}
 
 	tokopediaService struct {
@@ -169,4 +171,53 @@ func (s *tokopediaService) GetReviews(ctx context.Context, req dto.GetReviewsReq
 	}
 
 	return allReviews, nil
+}
+
+func (s *tokopediaService) GetShopAvatar(ctx context.Context, shopDomain string) (string, error) {
+	payload := strings.NewReader(fmt.Sprintf(` {
+        "operationName": "ShopInfoCore",
+        "variables": {
+            "id": 0,
+            "domain": "%s"
+        },
+        "query": "query ShopInfoCore($id: Int!, $domain: String) {\n  shopInfoByID(input: {shopIDs: [$id], fields: [\"active_product\", \"allow_manage_all\", \"assets\", \"core\", \"closed_info\", \"create_info\", \"favorite\", \"location\", \"status\", \"is_open\", \"other-goldos\", \"shipment\", \"shopstats\", \"shop-snippet\", \"other-shiploc\", \"shopHomeType\", \"branch-link\", \"goapotik\", \"fs_type\"], domain: $domain, source: \"shoppage\"}) {\n    result {\n                 shopAssets {\n        avatar\n          }\n                   }\n     }\n}\n"
+    }`, shopDomain))
+
+	client := &http.Client{}
+	tokopediaReq, err := http.NewRequest("POST", s.url, payload)
+	if err != nil {
+		return "", dto.ErrCreateHttpRequest
+	}
+
+	tokopediaReq.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36")
+	tokopediaReq.Header.Add("X-Source", "tokopedia-lite")
+	tokopediaReq.Header.Add("X-Tkpd-Lite-Service", "zeus")
+	tokopediaReq.Header.Add("Referer", "https://www.tokopedia.com/"+shopDomain)
+	tokopediaReq.Header.Add("X-TKPD-AKAMAI", "pdpGetLayout")
+	tokopediaReq.Header.Add("Content-Type", "application/json")
+
+	res, err := client.Do(tokopediaReq)
+	if err != nil {
+		return "", dto.ErrSendsHttpRequest
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", dto.ErrReadHttpResponseBody
+	}
+
+	var response dto.ShopAvatarResponseTokopedia
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return "", dto.ErrParseJson
+	}
+
+	if len(response.Data.ShopInfoByID.Result) > 0 {
+		shopAvatar := response.Data.ShopInfoByID.Result[0].ShopAssets.Avatar
+		return shopAvatar, nil
+	}
+
+	return "", dto.ErrShopAvatarNotFound
+
 }

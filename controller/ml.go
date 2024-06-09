@@ -75,6 +75,13 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		return
 	}
 
+	shopAvatar, err := c.tokopediaService.GetShopAvatar(ctx, productReq.ShopDomain)
+	if err != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_SHOP_AVATAR, err.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	// fmt.Println("=== PRODUCT ID ===")
 	// fmt.Println(product)
 
@@ -192,6 +199,7 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		Bintang:            ratingAvg,
 		ImageUrls:          product.ImageUrls,
 		ShopName:           product.ShopName,
+		ShopAvatar:         shopAvatar,
 		CountNegative:      predictResult.CountNegative,
 		CountPositive:      predictResult.CountPositive,
 		Packaging:          analyzeResult.Packaging,

@@ -8,6 +8,7 @@ type MLResult struct {
 	Bintang            float64  `json:"bintang"`
 	ImageUrls          []string `json:"image_urls"`
 	ShopName           string   `json:"shop_name"`
+	ShopAvatar         string   `json:"shop_avatar"`
 	CountNegative      int      `json:"count_negative"`
 	CountPositive      int      `json:"count_positive"`
 	Packaging          float32  `json:"packaging"`

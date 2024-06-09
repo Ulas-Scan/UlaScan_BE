@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
+
 	"io"
 	"net/http"
 	"os"
@@ -59,7 +59,6 @@ func (s *modelService) Predict(ctx context.Context, req dto.PredictRequest) (dto
 		return dto.PredictResponse{}, dto.ErrReadHttpResponseBody
 	}
 
-	fmt.Print(res)
 	// Check if the HTTP status code is 500
 	if res.StatusCode == http.StatusInternalServerError {
 		return dto.PredictResponse{}, dto.ErrModelInternalServerError
