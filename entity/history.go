@@ -12,6 +12,9 @@ type History struct {
 	ProductName      string    `json:"product_name" gorm:"not null"`
 	PositiveCount    int       `json:"positive_count" gorm:"not null"`
 	NegativeCount    int       `json:"negative_count" gorm:"not null"`
+	Rating           int       `json:"rating" gorm:"not null"`
+	Ulasan           int       `json:"ulasan" gorm:"not null"`
+	Bintang          float64   `json:"bintang" gorm:"not null"`
 	Packaging        float32   `json:"packaging" gorm:"not null"`
 	Delivery         float32   `json:"delivery" gorm:"not null"`
 	AdminResponse    float32   `json:"admin_response" gorm:"not null"`

@@ -93,9 +93,20 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 	// fmt.Println("=== REVIEWS ===")
 	// fmt.Println(reviews)
 
+	// Assuming `reviews` is a slice of a struct with `Message` and `Rating` fields
 	statements := make([]string, len(reviews))
+	ratingSum := 0.0
+
 	for i, review := range reviews {
 		statements[i] = review.Message
+		ratingSum += float64(review.Rating)
+	}
+
+	var ratingAvg float64
+	if len(reviews) > 0 {
+		ratingAvg = ratingSum / float64(len(reviews))
+	} else {
+		ratingAvg = 0.0 // or handle the case where there are no reviews
 	}
 
 	predictReq := dto.PredictRequest{
@@ -152,6 +163,9 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		history := dto.HistoryCreateRequest{
 			UserID:           userUUID,
 			ProductID:        product.ProductId,
+			Rating:           len(reviews),
+			Ulasan:           predictResult.CountNegative + predictResult.CountPositive,
+			Bintang:          ratingAvg,
 			URL:              productReq.ProductUrl,
 			ProductName:      product.ProductName,
 			PositiveCount:    predictResult.CountPositive,
@@ -173,6 +187,9 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_GET_REVIEWS, dto.MLResult{
 		ProductName:        product.ProductName,
 		ProductDescription: product.ProductDescription,
+		Rating:             len(reviews),
+		Ulasan:             predictResult.CountNegative + predictResult.CountPositive,
+		Bintang:            ratingAvg,
 		ImageUrls:          product.ImageUrls,
 		ShopName:           product.ShopName,
 		CountNegative:      predictResult.CountNegative,

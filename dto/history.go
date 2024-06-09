@@ -44,6 +44,9 @@ type (
 		UserID           uuid.UUID `json:"user_id" form:"user_id" binding:"required"`
 		ProductID        string    `json:"product_id" form:"product_id" binding:"required"`
 		URL              string    `json:"url" form:"url" binding:"required"`
+		Rating           int       `json:"rating" form:"rating" binding:"required"`
+		Ulasan           int       `json:"ulasan" form:"ulasan" binding:"required"`
+		Bintang          float64   `json:"bintang" form:"bintang" binding:"required"`
 		ProductName      string    `json:"product_name" form:"product_name" binding:"required"`
 		PositiveCount    int       `json:"positive_count" form:"positive_count" binding:"required"`
 		NegativeCount    int       `json:"negative_count" form:"negative_count" binding:"required"`
@@ -59,6 +62,9 @@ type (
 		UserID           uuid.UUID `json:"user_id"`
 		ProductID        string    `json:"product_id"`
 		URL              string    `json:"url"`
+		Rating           int       `json:"rating"`
+		Ulasan           int       `json:"ulasan"`
+		Bintang          float64   `json:"bintang"`
 		ProductName      string    `json:"product_name"`
 		PositiveCount    int       `json:"positive_count" `
 		NegativeCount    int       `json:"negative_count" `

@@ -3,6 +3,9 @@ package dto
 type MLResult struct {
 	ProductName        string   `json:"product_name"`
 	ProductDescription string   `json:"product_description"`
+	Rating             int      `json:"rating"`
+	Ulasan             int      `json:"ulasan"`
+	Bintang            float64  `json:"bintang"`
 	ImageUrls          []string `json:"image_urls"`
 	ShopName           string   `json:"shop_name"`
 	CountNegative      int      `json:"count_negative"`
