@@ -21,6 +21,7 @@ const (
 
 var (
 	ErrCreateHistory = errors.New("failed to create history")
+	ErrDeleteHistory = errors.New("failed to delete history")
 	ErrGetHistories  = errors.New("failed to get histories")
 	ErrGetHistory    = errors.New("failed to get history")
 )
@@ -40,19 +41,37 @@ type (
 	}
 
 	HistoryCreateRequest struct {
-		UserID      uuid.UUID `json:"user_id" form:"user_id" binding:"required"`
-		ProductID   string    `json:"product_id" form:"product_id" binding:"required"`
-		URL         string    `json:"url" form:"url" binding:"required"`
-		ProductName string    `json:"product_name" form:"product_name" binding:"required"`
-		Content     string    `json:"content" form:"content"`
+		UserID           uuid.UUID `json:"user_id" form:"user_id" binding:"required"`
+		ProductID        string    `json:"product_id" form:"product_id" binding:"required"`
+		URL              string    `json:"url" form:"url" binding:"required"`
+		Rating           int       `json:"rating" form:"rating" binding:"required"`
+		Ulasan           int       `json:"ulasan" form:"ulasan" binding:"required"`
+		Bintang          float64   `json:"bintang" form:"bintang" binding:"required"`
+		ProductName      string    `json:"product_name" form:"product_name" binding:"required"`
+		PositiveCount    int       `json:"positive_count" form:"positive_count" binding:"required"`
+		NegativeCount    int       `json:"negative_count" form:"negative_count" binding:"required"`
+		Packaging        float32   `json:"packaging"  form:"packaging" binding:"required"`
+		Delivery         float32   `json:"delivery" form:"delivery" binding:"required"`
+		AdminResponse    float32   `json:"admin_response" form:"admin_response" binding:"required"`
+		ProductCondition float32   `json:"product_condition" form:"product_condition" binding:"required"`
+		Content          string    `json:"content" form:"content"`
 	}
 
 	HistoryResponse struct {
-		ID          uuid.UUID `json:"id"`
-		UserID      uuid.UUID `json:"user_id"`
-		ProductID   string    `json:"product_id"`
-		URL         string    `json:"url"`
-		ProductName string    `json:"product_name"`
-		Content     string    `json:"content"`
+		ID               uuid.UUID `json:"id"`
+		UserID           uuid.UUID `json:"user_id"`
+		ProductID        string    `json:"product_id"`
+		URL              string    `json:"url"`
+		Rating           int       `json:"rating"`
+		Ulasan           int       `json:"ulasan"`
+		Bintang          float64   `json:"bintang"`
+		ProductName      string    `json:"product_name"`
+		PositiveCount    int       `json:"positive_count" `
+		NegativeCount    int       `json:"negative_count" `
+		Packaging        float32   `json:"packaging"`
+		Delivery         float32   `json:"delivery"`
+		AdminResponse    float32   `json:"admin_response"`
+		ProductCondition float32   `json:"product_condition"`
+		Content          string    `json:"content"`
 	}
 )
