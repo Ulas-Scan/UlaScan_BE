@@ -30,16 +30,19 @@ func main() {
 		// SERVICE
 		jwtService       service.JWTService       = service.NewJWTService()
 		userService      service.UserService      = service.NewUserService(userRepository, jwtService)
-    historyService   service.HistoryService   = service.NewHistoryService(historyRepository)
+		historyService   service.HistoryService   = service.NewHistoryService(historyRepository)
 		tokopediaService service.TokopediaService = service.NewTokopediaService()
+		modelService     service.ModelService     = service.NewModelService()
+		geminiService    service.GeminiService    = service.NewGeminiService()
 
 		// CONTROLLER
-		userController      controller.UserController      = controller.NewUserController(userService)
-    historyController controller.HistoryController     = controller.NewHistoryController(historyService)
-		tokopediaController controller.TokopediaController = controller.NewTokopediaController(tokopediaService)
+		userController    controller.UserController    = controller.NewUserController(userService)
+		historyController controller.HistoryController = controller.NewHistoryController(historyService)
+		mlController      controller.MLController      = controller.NewMLController(tokopediaService, modelService, geminiService, historyService)
 	)
 
 	defer config.CloseDatabaseConnection(db)
+	defer geminiService.CloseClient()
 
 	fmt.Println("MIGRATING DATABASE...")
 	if err := database.MigrateFresh(db); err != nil {
@@ -65,7 +68,7 @@ func main() {
 
 	// ROUTES
 	routes.User(server, userController, jwtService)
-	routes.Tokopedia(server, tokopediaController, jwtService)
+	routes.ML(server, mlController, jwtService)
 	routes.History(server, historyController, jwtService)
 
 	// RUNING THE SERVER

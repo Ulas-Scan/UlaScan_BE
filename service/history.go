@@ -28,12 +28,29 @@ func NewHistoryService(historyRepo repository.HistoryRepository) HistoryService 
 }
 
 func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreateRequest) (dto.HistoryResponse, error) {
+	isExist := s.historyRepo.CheckByProductId(ctx, nil, req.ProductID, req.UserID.String())
+	if isExist {
+		err := s.historyRepo.DeleteByProductId(ctx, nil, req.ProductID, req.UserID.String())
+		if err != nil {
+			return dto.HistoryResponse{}, dto.ErrDeleteHistory
+		}
+	}
+
 	history := entity.History{
-		URL:         req.ProductID,
-		ProductID:   req.ProductID,
-		ProductName: req.ProductName,
-		Content:     req.Content,
-		UserID:      req.UserID,
+		URL:              req.URL,
+		ProductID:        req.ProductID,
+		ProductName:      req.ProductName,
+		Rating:           req.Rating,
+		Ulasan:           req.Ulasan,
+		Bintang:          req.Bintang,
+		PositiveCount:    req.PositiveCount,
+		NegativeCount:    req.NegativeCount,
+		Packaging:        req.Packaging,
+		Delivery:         req.Delivery,
+		AdminResponse:    req.AdminResponse,
+		ProductCondition: req.ProductCondition,
+		Content:          req.Content,
+		UserID:           req.UserID,
 	}
 
 	historyCreated, err := s.historyRepo.CreateHistory(ctx, nil, history)
@@ -42,11 +59,20 @@ func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreat
 	}
 
 	return dto.HistoryResponse{
-		UserID:      historyCreated.UserID,
-		URL:         historyCreated.URL,
-		ProductID:   historyCreated.ProductID,
-		ProductName: historyCreated.ProductName,
-		Content:     historyCreated.Content,
+		UserID:           historyCreated.UserID,
+		URL:              historyCreated.URL,
+		ProductID:        historyCreated.ProductID,
+		Rating:           historyCreated.Rating,
+		Ulasan:           historyCreated.Ulasan,
+		Bintang:          historyCreated.Bintang,
+		ProductName:      historyCreated.ProductName,
+		PositiveCount:    historyCreated.PositiveCount,
+		NegativeCount:    historyCreated.NegativeCount,
+		Packaging:        historyCreated.Packaging,
+		Delivery:         historyCreated.Delivery,
+		AdminResponse:    historyCreated.AdminResponse,
+		ProductCondition: historyCreated.ProductCondition,
+		Content:          historyCreated.Content,
 	}, nil
 }
 
@@ -74,11 +100,20 @@ func (s *historyService) GetHistoryById(ctx context.Context, historyId string, u
 	}
 
 	return dto.HistoryResponse{
-		ID:          history.ID,
-		URL:         history.URL,
-		ProductID:   history.ProductID,
-		ProductName: history.ProductName,
-		Content:     history.Content,
-		UserID:      history.UserID,
+		UserID:           history.UserID,
+		ProductID:        history.ProductID,
+		ID:               history.ID,
+		URL:              history.URL,
+		Rating:           history.Rating,
+		Ulasan:           history.Ulasan,
+		Bintang:          history.Bintang,
+		ProductName:      history.ProductName,
+		PositiveCount:    history.PositiveCount,
+		NegativeCount:    history.NegativeCount,
+		Packaging:        history.Packaging,
+		Delivery:         history.Delivery,
+		AdminResponse:    history.AdminResponse,
+		ProductCondition: history.ProductCondition,
+		Content:          history.Content,
 	}, nil
 }

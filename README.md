@@ -1,3 +1,5 @@
+[![Deploy to GCE](https://github.com/Ulas-Scan/UlaScan_BE/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/Ulas-Scan/UlaScan_BE/actions/workflows/deploy.yml)
+
 # Ulascan: Bangkit 2024 Batch 6 Capstone Project Backend
 
 Welcome to the backend repository for the Bangkit 2024 Batch 6 capstone project! This backend serves the mobile app for our project.

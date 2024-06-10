@@ -14,6 +14,8 @@ type (
 		CreateHistory(ctx context.Context, tx *gorm.DB, history entity.History) (entity.History, error)
 		GetHistories(ctx context.Context, tx *gorm.DB, dto dto.HistoriesGetRequest, userId string) ([]entity.History, int64, error)
 		GetHistoryById(ctx context.Context, tx *gorm.DB, historyId string, userId string) (entity.History, error)
+		CheckByProductId(ctx context.Context, tx *gorm.DB, productId string, userId string) bool
+		DeleteByProductId(ctx context.Context, tx *gorm.DB, productId string, userId string) error
 	}
 
 	historyRepository struct {
@@ -87,4 +89,38 @@ func (r *historyRepository) GetHistoryById(ctx context.Context, tx *gorm.DB, his
 	}
 
 	return history, nil
+}
+
+func (r *historyRepository) CheckByProductId(ctx context.Context, tx *gorm.DB, productId string, userId string) bool {
+	if tx == nil {
+		tx = r.db
+	}
+
+	var history entity.History
+	err := tx.WithContext(ctx).
+		Where("product_id = ?", productId).
+		Where("user_id = ?", userId).
+		Take(&history).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return false
+		}
+		return false
+	}
+
+	return true
+}
+
+func (r *historyRepository) DeleteByProductId(ctx context.Context, tx *gorm.DB, productId string, userId string) error {
+	if tx == nil {
+		tx = r.db
+	}
+
+	err := tx.WithContext(ctx).Delete(&entity.History{}, "product_id = ? AND user_id = ?", productId, userId).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
