@@ -17,6 +17,7 @@ const (
 var (
 	ErrProductUrlMissing     = errors.New("product url is required")
 	ErrProductUrlWrongFormat = errors.New("invalid product url format")
+	ErrNotTokopediaUrls      = errors.New("invalid domain, only tokopedia.com urls are accepted")
 	ErrProductId             = errors.New("failed to extract product id")
 	ErrShopAvatarNotFound    = errors.New("shop avatar not found")
 )

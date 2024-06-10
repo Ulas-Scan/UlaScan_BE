@@ -56,6 +56,13 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		return
 	}
 
+	// Validate that the URL is from tokopedia.com
+	if parsedUrl.Host != "www.tokopedia.com" && parsedUrl.Host != "tokopedia.com" {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, dto.ErrNotTokopediaUrls.Error(), nil)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
 	pathParts := strings.Split(parsedUrl.Path, "/")
 	if len(pathParts) < 3 {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, dto.ErrProductUrlWrongFormat.Error(), nil)
