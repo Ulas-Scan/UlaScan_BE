@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
 	"ulascan-be/dto"
 	"ulascan-be/service"
@@ -55,6 +56,13 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		return
 	}
 
+	// Validate that the URL is from tokopedia.com
+	if parsedUrl.Host != "www.tokopedia.com" && parsedUrl.Host != "tokopedia.com" {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, dto.ErrNotTokopediaUrls.Error(), nil)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
+	}
+
 	pathParts := strings.Split(parsedUrl.Path, "/")
 	if len(pathParts) < 3 {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, dto.ErrProductUrlWrongFormat.Error(), nil)
@@ -71,13 +79,6 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 	product, err := c.tokopediaService.GetProduct(ctx, productReq)
 	if err != nil {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_PRODUCT_ID, err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
-	shopAvatar, err := c.tokopediaService.GetShopAvatar(ctx, productReq.ShopDomain)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_SHOP_AVATAR, err.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
@@ -123,13 +124,6 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 	// fmt.Println("=== PREDICT REQ ===")
 	// fmt.Println(predictReq)
 
-	predictResult, err := c.modelService.Predict(ctx, predictReq)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_PREDICT, err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
 	var builder strings.Builder
 	for _, review := range reviews {
 		builder.WriteString(review.Message)
@@ -137,16 +131,58 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 	}
 	concatenatedMessage := builder.String()
 
-	analyzeResult, err := c.geminiService.Analyze(ctx, concatenatedMessage)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, err.Error(), nil)
+	var shopAvatar string
+	var predictResult dto.PredictResponse
+	var analyzeResult dto.AnalyzeResponse
+	var summarizeResult string
+
+	var wg sync.WaitGroup
+	// var shopAvatarErr, predictErr error
+	var shopAvatarErr, predictErr, analyzeErr, summarizeErr error
+
+	wg.Add(4)
+
+	go func() {
+		defer wg.Done()
+		shopAvatar, shopAvatarErr = c.tokopediaService.GetShopAvatar(ctx, productReq.ShopDomain)
+	}()
+
+	go func() {
+		defer wg.Done()
+		predictResult, predictErr = c.modelService.Predict(ctx, predictReq)
+	}()
+
+	go func() {
+		defer wg.Done()
+		analyzeResult, analyzeErr = c.geminiService.Analyze(ctx, concatenatedMessage)
+	}()
+
+	go func() {
+		defer wg.Done()
+		summarizeResult, err = c.geminiService.Summarize(ctx, concatenatedMessage)
+	}()
+
+	wg.Wait()
+
+	if shopAvatarErr != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_SHOP_AVATAR, shopAvatarErr.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
 
-	summarizeResult, err := c.geminiService.Summarize(ctx, concatenatedMessage)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, err.Error(), nil)
+	if predictErr != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_PREDICT, predictErr.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
+	if summarizeErr != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, summarizeErr.Error(), nil)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+	if analyzeErr != nil {
+		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_ANALYZE, analyzeErr.Error(), nil)
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
