@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"strings"
 
 	"ulascan-be/dto"
 	"ulascan-be/entity"
@@ -64,7 +65,7 @@ func (r *historyRepository) GetHistories(ctx context.Context, tx *gorm.DB, dto d
 
 	scope := tx.WithContext(ctx)
 	if dto.ProductName != "" {
-		scope = scope.Where("product_name LIKE ?", "%"+dto.ProductName+"%")
+		scope = scope.Where("LOWER(product_name) LIKE ?", "%"+strings.ToLower(dto.ProductName)+"%")
 	}
 
 	// Query the paginated records
