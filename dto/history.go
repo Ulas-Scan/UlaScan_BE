@@ -28,8 +28,9 @@ var (
 
 type (
 	HistoriesGetRequest struct {
-		Page  int `json:"page"`
-		Limit int `json:"limit"`
+		Page        int    `json:"page"`
+		Limit       int    `json:"limit"`
+		ProductName string `json:"product_name"`
 	}
 
 	HistoriesResponse struct {

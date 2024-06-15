@@ -62,8 +62,13 @@ func (r *historyRepository) GetHistories(ctx context.Context, tx *gorm.DB, dto d
 		return []entity.History{}, 0, err
 	}
 
+	scope := tx.WithContext(ctx)
+	if dto.ProductName != "" {
+		scope = scope.Where("product_name = ?", dto.ProductName)
+	}
+
 	// Query the paginated records
-	err = tx.WithContext(ctx).
+	err = scope.
 		Where("user_id = ?", userId).
 		Limit(limit).Offset(offset).
 		Find(&histories).Error
