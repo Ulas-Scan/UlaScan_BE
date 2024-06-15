@@ -45,9 +45,12 @@ func (c *historyController) GetHistories(ctx *gin.Context) {
 		return
 	}
 
+	productName := ctx.Query("product_name")
+
 	req := dto.HistoriesGetRequest{
-		Page:  page,
-		Limit: limit,
+		Page:        page,
+		Limit:       limit,
+		ProductName: productName,
 	}
 
 	result, err := c.historyService.GetHistories(ctx.Request.Context(), req, userId)
