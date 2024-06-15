@@ -64,7 +64,7 @@ func (r *historyRepository) GetHistories(ctx context.Context, tx *gorm.DB, dto d
 
 	scope := tx.WithContext(ctx)
 	if dto.ProductName != "" {
-		scope = scope.Where("product_name = ?", dto.ProductName)
+		scope = scope.Where("product_name LIKE %?%", dto.ProductName)
 	}
 
 	// Query the paginated records
