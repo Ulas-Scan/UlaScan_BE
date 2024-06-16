@@ -55,7 +55,7 @@ type (
 		Delivery         float32   `json:"delivery" form:"delivery" binding:"required"`
 		AdminResponse    float32   `json:"admin_response" form:"admin_response" binding:"required"`
 		ProductCondition float32   `json:"product_condition" form:"product_condition" binding:"required"`
-		Content          string    `json:"content" form:"content"`
+		Summary          string    `json:"summary" form:"content"`
 	}
 
 	HistoryResponse struct {
@@ -73,6 +73,6 @@ type (
 		Delivery         float32   `json:"delivery"`
 		AdminResponse    float32   `json:"admin_response"`
 		ProductCondition float32   `json:"product_condition"`
-		Content          string    `json:"content"`
+		Summary          string    `json:"summary"`
 	}
 )

@@ -217,7 +217,7 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 			Delivery:         analyzeResult.Delivery,
 			AdminResponse:    analyzeResult.AdminResponse,
 			ProductCondition: analyzeResult.ProductCondition,
-			Content:          summarizeResult,
+			Summary:          summarizeResult,
 		}
 		_, err = c.historyService.CreateHistory(ctx, history)
 		if err != nil {

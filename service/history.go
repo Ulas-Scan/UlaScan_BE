@@ -49,7 +49,7 @@ func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreat
 		Delivery:         req.Delivery,
 		AdminResponse:    req.AdminResponse,
 		ProductCondition: req.ProductCondition,
-		Content:          req.Content,
+		Summary:          req.Summary,
 		UserID:           req.UserID,
 	}
 
@@ -72,7 +72,7 @@ func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreat
 		Delivery:         historyCreated.Delivery,
 		AdminResponse:    historyCreated.AdminResponse,
 		ProductCondition: historyCreated.ProductCondition,
-		Content:          historyCreated.Content,
+		Summary:          historyCreated.Summary,
 	}, nil
 }
 
@@ -114,6 +114,6 @@ func (s *historyService) GetHistoryById(ctx context.Context, historyId string, u
 		Delivery:         history.Delivery,
 		AdminResponse:    history.AdminResponse,
 		ProductCondition: history.ProductCondition,
-		Content:          history.Content,
+		Summary:          history.Summary,
 	}, nil
 }

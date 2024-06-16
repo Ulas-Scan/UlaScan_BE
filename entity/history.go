@@ -19,7 +19,7 @@ type History struct {
 	Delivery         float32   `json:"delivery" gorm:"not null"`
 	AdminResponse    float32   `json:"admin_response" gorm:"not null"`
 	ProductCondition float32   `json:"product_condition" gorm:"not null"`
-	Content          string    `json:"content" gorm:"not null"`
+	Summary          string    `json:"summary" gorm:"not null"`
 	UserID           uuid.UUID `json:"user_id" gorm:"not null" `
 	User             User      `json:"-" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;"`
 
