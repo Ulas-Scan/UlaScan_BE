@@ -43,13 +43,13 @@ func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreat
 		Rating:           req.Rating,
 		Ulasan:           req.Ulasan,
 		Bintang:          req.Bintang,
-		PositiveCount:    req.PositiveCount,
-		NegativeCount:    req.NegativeCount,
+		CountPositive:    req.CountPositive,
+		CountNegative:    req.CountNegative,
 		Packaging:        req.Packaging,
 		Delivery:         req.Delivery,
 		AdminResponse:    req.AdminResponse,
 		ProductCondition: req.ProductCondition,
-		Content:          req.Content,
+		Summary:          req.Summary,
 		UserID:           req.UserID,
 	}
 
@@ -66,13 +66,13 @@ func (s *historyService) CreateHistory(ctx context.Context, req dto.HistoryCreat
 		Ulasan:           historyCreated.Ulasan,
 		Bintang:          historyCreated.Bintang,
 		ProductName:      historyCreated.ProductName,
-		PositiveCount:    historyCreated.PositiveCount,
-		NegativeCount:    historyCreated.NegativeCount,
+		CountPositive:    historyCreated.CountPositive,
+		CountNegative:    historyCreated.CountNegative,
 		Packaging:        historyCreated.Packaging,
 		Delivery:         historyCreated.Delivery,
 		AdminResponse:    historyCreated.AdminResponse,
 		ProductCondition: historyCreated.ProductCondition,
-		Content:          historyCreated.Content,
+		Summary:          historyCreated.Summary,
 	}, nil
 }
 
@@ -108,12 +108,12 @@ func (s *historyService) GetHistoryById(ctx context.Context, historyId string, u
 		Ulasan:           history.Ulasan,
 		Bintang:          history.Bintang,
 		ProductName:      history.ProductName,
-		PositiveCount:    history.PositiveCount,
-		NegativeCount:    history.NegativeCount,
+		CountPositive:    history.CountPositive,
+		CountNegative:    history.CountNegative,
 		Packaging:        history.Packaging,
 		Delivery:         history.Delivery,
 		AdminResponse:    history.AdminResponse,
 		ProductCondition: history.ProductCondition,
-		Content:          history.Content,
+		Summary:          history.Summary,
 	}, nil
 }

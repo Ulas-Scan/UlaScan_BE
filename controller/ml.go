@@ -211,13 +211,13 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 			Bintang:          ratingAvg,
 			URL:              productReq.ProductUrl,
 			ProductName:      product.ProductName,
-			PositiveCount:    predictResult.CountPositive,
-			NegativeCount:    predictResult.CountNegative,
+			CountPositive:    predictResult.CountPositive,
+			CountNegative:    predictResult.CountNegative,
 			Packaging:        analyzeResult.Packaging,
 			Delivery:         analyzeResult.Delivery,
 			AdminResponse:    analyzeResult.AdminResponse,
 			ProductCondition: analyzeResult.ProductCondition,
-			Content:          summarizeResult,
+			Summary:          summarizeResult,
 		}
 		_, err = c.historyService.CreateHistory(ctx, history)
 		if err != nil {
