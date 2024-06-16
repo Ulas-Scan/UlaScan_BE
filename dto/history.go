@@ -49,8 +49,8 @@ type (
 		Ulasan           int       `json:"ulasan" form:"ulasan" binding:"required"`
 		Bintang          float64   `json:"bintang" form:"bintang" binding:"required"`
 		ProductName      string    `json:"product_name" form:"product_name" binding:"required"`
-		PositiveCount    int       `json:"positive_count" form:"positive_count" binding:"required"`
-		NegativeCount    int       `json:"negative_count" form:"negative_count" binding:"required"`
+		CountPositive    int       `json:"count_positive" form:"count_positive" binding:"required"`
+		CountNegative    int       `json:"count_negative" form:"count_negative" binding:"required"`
 		Packaging        float32   `json:"packaging"  form:"packaging" binding:"required"`
 		Delivery         float32   `json:"delivery" form:"delivery" binding:"required"`
 		AdminResponse    float32   `json:"admin_response" form:"admin_response" binding:"required"`
@@ -67,8 +67,8 @@ type (
 		Ulasan           int       `json:"ulasan"`
 		Bintang          float64   `json:"bintang"`
 		ProductName      string    `json:"product_name"`
-		PositiveCount    int       `json:"positive_count" `
-		NegativeCount    int       `json:"negative_count" `
+		CountPositive    int       `json:"count_positive" `
+		CountNegative    int       `json:"count_negative" `
 		Packaging        float32   `json:"packaging"`
 		Delivery         float32   `json:"delivery"`
 		AdminResponse    float32   `json:"admin_response"`
