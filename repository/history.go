@@ -71,6 +71,7 @@ func (r *historyRepository) GetHistories(ctx context.Context, tx *gorm.DB, dto d
 	// Query the paginated records
 	err = scope.
 		Where("user_id = ?", userId).
+		Order("updated_at desc").
 		Limit(limit).Offset(offset).
 		Find(&histories).Error
 	if err != nil {
