@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -54,6 +56,23 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, err.Error(), nil)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
 		return
+	}
+
+	if parsedUrl.Host == "tokopedia.link" {
+		expandedUrl, err := expandUrl(productUrl)
+		if err != nil {
+			res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, err.Error(), nil)
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+			return
+		}
+		productUrl = expandedUrl
+
+		parsedUrl, err = url.Parse(productUrl)
+		if err != nil {
+			res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_REVIEWS, err.Error(), nil)
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
+			return
+		}
 	}
 
 	// Validate that the URL is from tokopedia.com
@@ -245,4 +264,63 @@ func (c *mlController) GetSentimentAnalysisAndSummarization(ctx *gin.Context) {
 		Summary:            summarizeResult,
 	})
 	ctx.JSON(http.StatusOK, res)
+}
+
+func expandUrl(shortUrl string) (string, error) {
+	client := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			// Prevent the default redirect behavior to handle it manually
+			return http.ErrUseLastResponse
+		},
+	}
+
+	// First request
+	req1, err := http.NewRequest("GET", shortUrl, nil)
+	if err != nil {
+		return "", fmt.Errorf("error creating request: %v", err)
+	}
+	// Set headers for the first request
+	req1.Header.Set("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1")
+
+	// Make the first request
+	resp1, err := client.Do(req1)
+	if err != nil {
+		return "", fmt.Errorf("error making first request: %v", err)
+	}
+	defer resp1.Body.Close()
+
+	if resp1.StatusCode >= 400 {
+		return "", fmt.Errorf("unexpected status code from first request: %d", resp1.StatusCode)
+	}
+
+	newUrl1 := resp1.Header.Get("Location")
+	if newUrl1 == "" {
+		return "", errors.New("empty Location header in first response")
+	}
+
+	// Second request
+	req2, err := http.NewRequest("GET", newUrl1, nil)
+	if err != nil {
+		return "", fmt.Errorf("error creating second request: %v", err)
+	}
+	// Set headers for the second request
+	req2.Header.Set("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1")
+
+	// Make the second request
+	resp2, err := client.Do(req2)
+	if err != nil {
+		return "", fmt.Errorf("error making second request: %v", err)
+	}
+	defer resp2.Body.Close()
+
+	if resp2.StatusCode >= 400 {
+		return "", fmt.Errorf("unexpected status code from second request: %d", resp2.StatusCode)
+	}
+
+	finalUrl := resp2.Header.Get("Location")
+	if finalUrl == "" {
+		return "", errors.New("empty Location header in second response")
+	}
+
+	return finalUrl, nil
 }

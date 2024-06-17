@@ -1,45 +1,31 @@
 [![Deploy to GCE](https://github.com/Ulas-Scan/UlaScan_BE/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/Ulas-Scan/UlaScan_BE/actions/workflows/deploy.yml)
 
-# Ulascan: Bangkit 2024 Batch 6 Capstone Project Backend
+# Backend for Ulascan: Bangkit 2024 Capstone Project
 
-Welcome to the backend repository for the Bangkit 2024 Batch 6 capstone project! This backend serves the mobile app for our project.
+Welcome to the backend repository for the Ulascan: Bangkit 2024 Batch 6 capstone project! This backend serves the mobile app for our project. It is a backend service built using Gin, Golang, and GORM.
 
-## Features
+## API Documentation
 
-- Authentication: User authentication and authorization.
-- ...
-- ...
+The API documentation for this project can be found [here](https://www.postman.com/supply-administrator-61638669/workspace/ulascan/folder/36341500-c7118b3a-2f29-4fcd-9e08-9641cf52d5a8).
 
-## Installation
+## Backend and Cloud Architecture
+![KELOMPOK MAS ACLYS](https://github.com/Ulas-Scan/UlaScan_BE/assets/87474722/c6f832e5-9ceb-4243-a9f6-095b89dae825)
 
-To set up the backend for the capstone project, follow these steps:
+## Local Installation for Development
 
-1. **Clone the Repository**: 
+To set up the backend for local development, follow these steps:
+
+1. **Clone the Repository**:
    ```sh
-   git clone https://github.com/javakanaya/ulascan.git
+   git clone https://github.com/Ulas-Scan/UlaScan_BE
    ```
-2. **Set Up PostgreSQL Database**:
-    Connect to your PostgreSQL database:
+2.  **Navigate to the Project Folder**:
     ```sh
-    psql -U <your_user> 
+    cd UlaScan_BE
     ```
-    Create the database
-    ```SQL
-    CREATE DATABASE ulasacan";    
-    ```
-    Run the following SQL command to enable the uuid-ossp extension:
-    ```SQL
-    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-    ```
-
 3. **Set Environment Variables**:
-    Create a ```.env``` file in the root directory of the project based on the ```.env.example``` file Define the following environment variables in the ```.env``` file:
-    ```env
-    DB_HOST=<your_database_host>
-    DB_USER=<your_database_user>
-    DB_PASSWORD=<your_database_password>
-    DB_NAME=<your_database_name>
-    DB_PORT=<your_database_port>
+    ```sh
+    cp .env.example .env
     ```
 
 4. **Run the Application**:
