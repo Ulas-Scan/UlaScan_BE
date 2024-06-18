@@ -72,6 +72,11 @@ func (s *tokopediaService) GetProduct(ctx context.Context, req dto.GetProductReq
 		return dto.GetProductResponse{}, dto.ErrParseJson
 	}
 
+	// Check for errors in the response
+	if errors, ok := response["errors"].([]interface{}); ok && len(errors) > 0 {
+		return dto.GetProductResponse{}, dto.ErrProductNotFound
+	}
+
 	// Extracting necessary data
 	productData := response["data"].(map[string]interface{})["pdpGetLayout"].(map[string]interface{})["components"].([]interface{})
 	var productName string
