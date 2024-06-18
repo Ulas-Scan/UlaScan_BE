@@ -46,7 +46,7 @@ func (j *jwtService) GenerateToken(userId string, role string) string {
 		userId,
 		role,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 2)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
 			Issuer:    j.issuer,
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
