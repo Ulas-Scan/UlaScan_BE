@@ -9,7 +9,8 @@ Welcome to the backend repository for the Ulascan: Bangkit 2024 Batch 6 capstone
 The API documentation for this project can be found [here](https://www.postman.com/supply-administrator-61638669/workspace/ulascan/folder/36341500-c7118b3a-2f29-4fcd-9e08-9641cf52d5a8).
 
 ## Backend and Cloud Architecture
-![KELOMPOK MAS ACLYS](https://github.com/Ulas-Scan/UlaScan_BE/assets/87474722/c6f832e5-9ceb-4243-a9f6-095b89dae825)
+![Cloud Architecture](https://github.com/Ulas-Scan/UlaScan_BE/assets/87474722/cbcc7a9a-36c3-4212-9f1a-7d2afe5e0e2e)
+
 
 ## Local Installation for Development
 
