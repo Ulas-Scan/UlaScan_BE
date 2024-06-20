@@ -68,6 +68,7 @@ jobs:
             && docker stop $APP_NAME || true \
             && docker rm --force $APP_NAME || true \
             && docker run -d \
+                --log-driver=gcplogs \
                 --name $APP_NAME \
                 -p 8080:8080 \
                 -e DB_HOST=${{ secrets.DB_HOST }} \
