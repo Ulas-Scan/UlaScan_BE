@@ -15,8 +15,6 @@ type (
 		Register(ctx *gin.Context)
 		Login(ctx *gin.Context)
 		Me(ctx *gin.Context)
-		Update(ctx *gin.Context)
-		Delete(ctx *gin.Context)
 	}
 
 	userController struct {
@@ -30,6 +28,16 @@ func NewUserController(us service.UserService) UserController {
 	}
 }
 
+// Register godoc
+// @Summary Register a new user
+// @Description Register a new user with the provided details
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body dto.UserCreateRequest true "User details"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /api/user [post]
 func (c *userController) Register(ctx *gin.Context) {
 	var user dto.UserCreateRequest
 	if err := ctx.ShouldBind(&user); err != nil {
@@ -49,6 +57,16 @@ func (c *userController) Register(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// Me godoc
+// @Summary User info
+// @Description Get user info
+// @Tags User
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Security BearerAuth
+// @Router /api/user/me [get]
 func (c *userController) Me(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(string)
 
@@ -63,6 +81,16 @@ func (c *userController) Me(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Login user with the provided creds
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body dto.UserLoginRequest true "User creds"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Router /api/user/login [post]
 func (c *userController) Login(ctx *gin.Context) {
 	var req dto.UserLoginRequest
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -79,38 +107,5 @@ func (c *userController) Login(ctx *gin.Context) {
 	}
 
 	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_LOGIN, result)
-	ctx.JSON(http.StatusOK, res)
-}
-
-func (c *userController) Update(ctx *gin.Context) {
-	var req dto.UserUpdateRequest
-	if err := ctx.ShouldBind(&req); err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_GET_DATA_FROM_BODY, err.Error(), nil)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	userId := ctx.MustGet("user_id").(string)
-	err := c.userService.UpdateUser(ctx.Request.Context(), req, userId)
-	if err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_UPDATE_USER, err.Error(), nil)
-		ctx.JSON(http.StatusBadRequest, res)
-		return
-	}
-
-	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_UPDATE_USER, nil)
-	ctx.JSON(http.StatusOK, res)
-}
-
-func (c *userController) Delete(ctx *gin.Context) {
-	userId := ctx.MustGet("user_id").(string)
-
-	if err := c.userService.DeleteUser(ctx.Request.Context(), userId); err != nil {
-		res := utils.BuildResponseFailed(dto.MESSAGE_FAILED_DELETE_USER, err.Error(), nil)
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, res)
-		return
-	}
-
-	res := utils.BuildResponseSuccess(dto.MESSAGE_SUCCESS_DELETE_USER, nil)
 	ctx.JSON(http.StatusOK, res)
 }
