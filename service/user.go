@@ -15,8 +15,6 @@ type (
 		RegisterUser(ctx context.Context, req dto.UserCreateRequest) (dto.UserResponse, error)
 		GetUserById(ctx context.Context, userId string) (dto.UserResponse, error)
 		GetUserByEmail(ctx context.Context, email string) (dto.UserResponse, error)
-		UpdateUser(ctx context.Context, req dto.UserUpdateRequest, userId string) error
-		DeleteUser(ctx context.Context, userId string) error
 		Verify(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error)
 	}
 
@@ -85,40 +83,6 @@ func (s *userService) GetUserByEmail(ctx context.Context, email string) (dto.Use
 		Role:  emails.Role,
 		Email: emails.Email,
 	}, nil
-}
-
-func (s *userService) UpdateUser(ctx context.Context, req dto.UserUpdateRequest, userId string) error {
-	user, err := s.userRepo.GetUserById(ctx, nil, userId)
-	if err != nil {
-		return dto.ErrUserNotFound
-	}
-
-	data := entity.User{
-		ID:    user.ID,
-		Name:  req.Name,
-		Role:  user.Role,
-		Email: req.Email,
-	}
-
-	if err := s.userRepo.UpdateUser(ctx, nil, data); err != nil {
-		return dto.ErrUpdateUser
-	}
-
-	return nil
-}
-
-func (s *userService) DeleteUser(ctx context.Context, userId string) error {
-	user, err := s.userRepo.GetUserById(ctx, nil, userId)
-	if err != nil {
-		return dto.ErrUserNotFound
-	}
-
-	err = s.userRepo.DeleteUser(ctx, nil, user.ID.String())
-	if err != nil {
-		return dto.ErrDeleteUser
-	}
-
-	return nil
 }
 
 func (s *userService) Verify(ctx context.Context, req dto.UserLoginRequest) (dto.UserLoginResponse, error) {

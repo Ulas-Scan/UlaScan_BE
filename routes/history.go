@@ -8,10 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func History(route *gin.Engine, historyController controller.HistoryController, jwtService service.JWTService) {
-	routes := route.Group("/api/history")
+func History(route *gin.RouterGroup, historyController controller.HistoryController, jwtService service.JWTService) {
+	routes := route.Group("/history")
 	{
-		// User
 		routes.GET("", middleware.Authenticate(jwtService), historyController.GetHistories)
 		routes.GET("/:id", middleware.Authenticate(jwtService), historyController.GetHistory)
 	}

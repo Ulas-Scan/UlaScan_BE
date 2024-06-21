@@ -28,6 +28,18 @@ func NewHistoryController(hs service.HistoryService) HistoryController {
 	}
 }
 
+// GetHistories godoc
+// @Summary Retrieve the user's analysis histories.
+// @Description Retrieve the user's analysis histories.
+// @Tags History
+// @Accept json
+// @Produce json
+// @Param page query int true "Page number"
+// @Param limit query int true "Maximum number of results per page"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Security BearerAuth
+// @Router /api/history [get]
 func (c *historyController) GetHistories(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(string)
 
@@ -64,6 +76,17 @@ func (c *historyController) GetHistories(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+// GetHistory godoc
+// @Summary Retrieve the user's analysis history by id.
+// @Description Retrieve the user's analysis history by id.
+// @Tags History
+// @Accept json
+// @Produce json
+// @Param id path string true "History ID"
+// @Success 200 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Security BearerAuth
+// @Router /api/history/{id} [get]
 func (c *historyController) GetHistory(ctx *gin.Context) {
 	userId := ctx.MustGet("user_id").(string)
 	id := ctx.Param("id")

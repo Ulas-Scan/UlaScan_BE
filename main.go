@@ -7,6 +7,7 @@ import (
 	"ulascan-be/constants"
 	"ulascan-be/controller"
 	"ulascan-be/database"
+	_ "ulascan-be/docs"
 	"ulascan-be/middleware"
 	"ulascan-be/repository"
 	"ulascan-be/routes"
@@ -14,8 +15,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title UlaScan BE API
+// @version 1.2
+// @description All provided API for Ulascan APP.
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name Muhammad Hilman Al Ayubi
+// @contact.email c010d4ky0983@bangkit.academy
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter the token with the `Bearer ` prefix, e.g. "Bearer abcde12345"
 func main() {
 	fmt.Println("STARTING...")
 
@@ -61,21 +77,26 @@ func main() {
 
 	// SERVER
 	server := gin.Default()
+
 	// Use middleware
 	server.Use(middleware.Logger())
 	server.Use(middleware.Recovery())
 	server.Use(middleware.CORSMiddleware())
 
 	// ROUTES
-	routes.User(server, userController, jwtService)
-	routes.ML(server, mlController, jwtService)
-	routes.History(server, historyController, jwtService)
+	apiGroup := server.Group("/api")
+	routes.User(apiGroup, userController, jwtService)
+	routes.ML(apiGroup, mlController, jwtService)
+	routes.History(apiGroup, historyController, jwtService)
 
 	// RUNING THE SERVER
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+
+	url := ginSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", port))
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	if err := server.Run("0.0.0.0:" + port); err != nil {
 		fmt.Println("Server failed to start: ", err)
