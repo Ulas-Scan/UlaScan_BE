@@ -77,6 +77,7 @@ jobs:
                 -e DB_NAME=${{ secrets.DB_NAME }} \
                 -e DB_PORT=${{ secrets.DB_PORT }} \
                 -e APP_ENV=${{ secrets.APP_ENV }} \
+                -e IP_INSTANCE=${{ secrets.GCE_INSTANCE_IP }} \
                 -e ML_URL=${{ secrets.ML_URL }} \
                 -e ML_API_KEY=${{ secrets.ML_API_KEY }} \
                 -e GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }} \

@@ -95,7 +95,12 @@ func main() {
 		port = "8080"
 	}
 
-	url := ginSwagger.URL(fmt.Sprintf("http://localhost:%s/swagger/doc.json", port))
+	ip := os.Getenv("IP_INSTANCE")
+	if ip == "" {
+		port = "localhost:8080"
+	}
+
+	url := ginSwagger.URL(fmt.Sprintf("http://%s/swagger/doc.json", ip))
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	if err := server.Run("0.0.0.0:" + port); err != nil {
